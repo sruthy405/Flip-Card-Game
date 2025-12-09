@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flip Game</title>
+    <link rel="stylesheet" href="flip.css">
+    <style>
+        /* Game Header Styles */
+        .game-ui {
+            display: none;
+        }
+        
+        .game-header {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            width: 100%;
+            position: fixed;
+            background-color: #081744;
+            font-family: Arial, sans-serif;
+            top: 0px;
+            left: 0;
+            right: 0;
+            padding: 12px;
+            box-sizing: border-box;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1000;
+            color: white;
+        }
+
+        .game-stats {
+            grid-column: 2;
+            justify-self: center;
+            display: flex;
+            gap: 20px;
+        }
+
+        .game-controls {
+            grid-column: 3;
+            justify-self: end;
+            display: flex;
+            gap: 10px;
+        }
+
+        .game-header button {
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 10px 20px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .reset-btn {
+            background-color:#880fe8;
+        }
+
+        .reset-btn:hover {
+            background-color: #9e47e5 
+        }
+
+        .pause-btn {
+            background-color: #3498db;
+        }
+
+        .pause-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* Pause Overlay */
+        .pause-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1500;
+        }
+
+        .pause-overlay.active {
+            display: flex;
+        }
+
+        .pause-content {
+            background-color: white;
+            color: #333;
+            padding: 40px 50px;
+            border-radius: 15px;
+            font-family: 'Open Sans', Arial, sans-serif;
+            text-align: center;
+            min-width: 350px;
+        }
+
+        .pause-content h2 {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0 0 30px 0;
+            color: #333;
+        }
+
+        .pause-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 25px 0 35px 0;
+            padding: 25px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .pause-stat {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .pause-stat-label {
+            font-size: 13px;
+            color: #999;
+            font-weight: normal;
+            text-transform: capitalize;
+        }
+
+        .pause-stat-value {
+            font-size: 26px;
+            font-weight: bold;
+            color: #333;
+            line-height: 1;
+        }
+
+        .pause-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .pause-btn-resume {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pause-btn-resume:hover {
+            background-color: #2980b9;
+            transform: scale(1.02);
+        }
+
+        .pause-btn-restart {
+            background-color: transparent;
+            color:  #9e47e5;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pause-btn-restart:hover {
+            background-color: #ffe6e6;
+        }
+
+        /* Exit Button */
+        .exit-btn {
+            position: fixed;
+            top: 10px;
+            left: 20px;
+            z-index: 2000;
+            padding: 13px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: #ea4335;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .exit-btn:hover {
+            background-color: #d93025;
+        }
+
+        /* Exit Confirmation Dialog */
+        #exitConfirmation {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .exit-dialog {
+            background: white;
+            color: #000;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .exit-dialog p {
+            margin: 16px 0;
+            color: #555;
+            font-size: 18px;
+        }
+
+        .exit-dialog button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+
+        .exit-dialog .confirm-btn {
+            background-color: #ea4335;
+            color: white;
+        }
+
+        .exit-dialog .cancel-btn {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        /* Adjust game area for header */
+     /* Adjust game area for header */
+#g {
+    margin-top: 50px;
+}
+
+#g .timer {
+    position: fixed;
+    top: 0;          /* <-- RESTORED TO ABSOLUTE TOP */
+    left: 0;
+    width: 0%;
+    height: 5px;
+    background: #C0392B;
+    z-index: 2001;   /* Set higher than the Exit button (2000) to ensure visibility */
+}
+    </style>
+</head>
+<body>
+    <!-- Exit Button -->
+    <button class="exit-btn" onclick="showExitConfirmation()">Exit</button>
+    
+    <!-- Exit Confirmation Dialog -->
+    <div id="exitConfirmation">
+        <div class="exit-dialog">
+            <p>Are you sure you want to exit?</p>
+            <div>
+                <button class="confirm-btn" onclick="confirmExit()">Yes</button>
+                <button class="cancel-btn" onclick="cancelExit()">No</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game UI Header -->
+    <div class="game-ui">
+        <div class="game-header">
+            <div class="game-stats">
+                <span class="moves">Moves: <span>0</span></span>
+                <span class="timer-display">Time: <span>00:00</span></span>
+            </div>
+            <div class="game-controls">
+                <button class="reset-btn">Reset</button>
+                <button class="pause-btn">⏸ Pause</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pause Overlay -->
+    <div class="pause-overlay">
+        <div class="pause-content">
+            <h2>Pause</h2>
+            <div class="pause-stats">
+                <div class="pause-stat">
+                    <div class="pause-stat-label">Difficulty</div>
+                    <div class="pause-stat-value" id="pause-difficulty">-</div>
+                </div>
+                <div class="pause-stat">
+                    <div class="pause-stat-label">Moves</div>
+                    <div class="pause-stat-value" id="pause-moves">0</div>
+                </div>
+                <div class="pause-stat">
+                    <div class="pause-stat-label">Time</div>
+                    <div class="pause-stat-value" id="pause-time">00:00</div>
+                </div>
+            </div>
+            <div class="pause-buttons">
+                <button class="pause-btn-resume" onclick="togglePause()">Resume Game</button>
+                <button class="pause-btn-restart" onclick="resetGame()">Restart</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="g"></div>
+    
+    <div class="logo">
+        <p class="info" style="text-transform: uppercase; font-weight:bold; color:#FFFFFF">Click the P to get started.</p>
+        <div class="card left">
+            <div class="flipper">
+                <div class="f c1">F</div>
+                <div class="b contentbox" id="stats">
+                    <div class="padded">
+                        <h2>Figures</h2>
+                        Looks like you haven't FLIPped yet.
+                        <a href="javascript:;" class="playnow">Play now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card active twist">
+            <div class="flipper">
+                <div class="b f">
+                    <div class="c2">L</div>
+                </div>
+            </div>
+        </div>
+        <div class="card left">
+            <div class="flipper">
+                <div class="f c3">I</div>
+                <div class="b contentbox instructions">
+                    <div class="padded">
+                        <h2>Instructions</h2>
+                        <p>Press [p] to pause, or [ESC] to abandon game.</p>
+                        <p>Flip is a timed card memory game. Click the green cards to see what symbol they uncover and try to find the matching symbol underneath the other cards.</p>
+                        <p>Uncover two matching symbols at once to eliminate them from the game.</p>
+                        <p>Eliminate all cards as fast as you can to win the game. Have fun FLIPing!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="flipper">
+                <div class="f c4">P</div>
+                <div class="b contentbox levels">
+                    <a href="javascript:;" data-level="8" class="play">Casual</a>
+                    <a href="javascript:;" data-level="18" class="play">Medium</a>
+                    <a href="javascript:;" data-level="32" class="play">Hard</a>
+                </div>
+            </div>
+        </div>
+        <p class="info">Flip Game</p>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Game State Variables
+        let moves = 0;
+        let gameTime = 0;
+        let timerInterval;
+        let gameActive = false;
+
+        // Initialize Game Stats
+        function initGameStats() {
+            moves = 0;
+            gameTime = 0;
+            updateGameStats();
+        }
+
+        // Update Stats Display
+        function updateGameStats() {
+            $('.moves span').text(moves);
+            const minutes = Math.floor(gameTime / 60).toString().padStart(2, '0');
+            const seconds = (gameTime % 60).toString().padStart(2, '0');
+            $('.timer-display span').text(`${minutes}:${seconds}`);
+        }
+
+        // Pause functionality
+        function togglePause() {
+            const isPaused = $('#g').attr('data-paused') === '1';
+            const timerOn = localStorage.getItem('timerOn') !== 'false';
+            
+            if (isPaused) {
+                // Resume game
+                $('#g').attr('data-paused', '0');
+                $('.pause-overlay').removeClass('active');
+                $('.pause-btn').html('⏸ Pause');
+                timerInterval = setInterval(() => {
+                    gameTime++;
+                    updateGameStats();
+                }, 1000);
+                if (timerOn && $('.timer').length) {
+                    $('.timer').css('animation-play-state', 'running');
+                }
+            } else {
+                // Pause game
+                $('#g').attr('data-paused', '1');
+                $('.pause-overlay').addClass('active');
+                $('.pause-btn').html('▶ Resume');
+                
+                // Update pause overlay stats
+                const difficulty = $('#g').attr('class') || '-';
+                $('#pause-difficulty').text(difficulty.charAt(0).toUpperCase() + difficulty.slice(1));
+                $('#pause-moves').text(moves);
+                const minutes = Math.floor(gameTime / 60).toString().padStart(2, '0');
+                const seconds = (gameTime % 60).toString().padStart(2, '0');
+                $('#pause-time').text(`${minutes}:${seconds}`);
+                
+                clearInterval(timerInterval);
+                if (timerOn && $('.timer').length) {
+                    $('.timer').css('animation-play-state', 'paused');
+                }
+            }
+        }
+
+        // Reset functionality
+        function resetGame() {
+            if (gameActive) {
+                clearInterval(timerInterval);
+                gameActive = false;
+                $('#g').attr('data-paused', '0').removeAttr('class').empty();
+                $('.pause-overlay').removeClass('active');
+                $('.game-ui').hide();
+                $('.logo').fadeIn(250);
+                initGameStats();
+                
+                // Reset to FLIP screen
+                $('.c1').text('F');
+                $('.c2').text('L');
+                $('.c3').text('I');
+                $('.c4').text('P');
+            }
+        }
+
+        // Exit confirmation functions
+        function showExitConfirmation() {
+            document.getElementById('exitConfirmation').style.display = 'flex';
+        }
+
+        function confirmExit() {
+            window.location.href = 'homepage.html';
+        }
+
+        function cancelExit() {
+            document.getElementById('exitConfirmation').style.display = 'none';
+        }
+
+        // Event listeners
+        $(document)
+            .on('click', '.pause-btn', togglePause)
+            .on('click', '.reset-btn', resetGame)
+            .on('keyup', function(e) {
+                if (!gameActive) return;
+                
+                if (e.keyCode === 80) { // P key
+                    togglePause();
+                }
+                if (e.keyCode === 27) { // ESC key
+                    resetGame();
+                }
+            });
+
+        // Close exit dialog when clicking outside
+        document.getElementById('exitConfirmation').addEventListener('click', function(e) {
+            if (e.target === this) cancelExit();
+        });
+
+        $(function(){
+            // Sound effects initialization
+            const sounds = {
+                flip: new Audio("sounds/flip.mp3"),
+                match: new Audio("sounds/match.mp3"),
+                wrong: new Audio("sounds/wrong.mp3"),
+                victory: new Audio("sounds/victory.mp3"),
+                fail: new Audio("sounds/fail-sound.mp3")
+            };
+
+            // Play sound based on settings
+            function playGameSound(soundName) {
+                const soundOn = localStorage.getItem('soundOn') !== 'false';
+                if(soundOn && sounds[soundName]) {
+                    sounds[soundName].currentTime = 0;
+                    sounds[soundName].play().catch(e => console.log("Sound play failed:", e));
+                }
+            }
+
+            function set(key, value) { localStorage.setItem(key, value); }
+            function get(key) { return localStorage.getItem(key); }
+            function increase(el) { set(el, parseInt(get(el)) + 1); }
+            function decrease(el) { set(el, parseInt(get(el)) - 1); }
+
+            var toTime = function(nr){
+                if(nr == '-:-') return nr;
+                else { var n = ' '+nr/1000+' '; return n.substr(0, n.length-1)+'s'; }
+            };
+
+            function updateStats(){
+                $('#stats').html('<div class="padded"><h2>Figures: <span>'+
+                    '<b>'+get('flip_won')+'</b><i>Won</i>'+
+                    '<b>'+get('flip_lost')+'</b><i>Lost</i>'+
+                    '<b>'+get('flip_abandoned')+'</b><i>Abandoned</i></span></h2>'+
+                    '<ul><li><b>Best Casual:</b> <span>'+toTime(get('flip_casual'))+'</span></li>'+
+                    '<li><b>Best Medium:</b> <span>'+toTime(get('flip_medium'))+'</span></li>'+
+                    '<li><b>Best Hard:</b> <span>'+toTime(get('flip_hard'))+'</span></li></ul>'+
+                    '<ul><li><b>Total Flips:</b> <span>'+parseInt((parseInt(get('flip_matched')) + parseInt(get('flip_wrong'))) * 2)+'</span></li>'+
+                    '<li><b>Matched Flips:</b> <span>'+get('flip_matched')+'</span></li>'+
+                    '<li><b>Wrong Flips:</b> <span>'+get('flip_wrong')+'</span></li></ul></div>');
+            }
+
+            function shuffle(array) {
+                var currentIndex = array.length, temporaryValue, randomIndex;
+                while (0 !== currentIndex) {
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex -= 1;
+                    temporaryValue = array[currentIndex];
+                    array[currentIndex] = array[randomIndex];
+                    array[randomIndex] = temporaryValue;
+                }
+                return array;
+            }
+
+            function startScreen(text){
+                $('#g').removeAttr('class').empty();
+                $('.logo').fadeIn(250);
+                $('.game-ui').hide();
+                clearInterval(timerInterval);
+                gameActive = false;
+                $('#g').attr('data-paused', '0');
+                $('.pause-overlay').removeClass('active');
+
+                $('.c1').text(text.substring(0, 1));
+                $('.c2').text(text.substring(1, 2));
+                $('.c3').text(text.substring(2, 3));
+                $('.c4').text(text.substring(3, 4));
+
+                if(text == 'nice'){
+                    increase('flip_won');
+                    decrease('flip_abandoned');
+                }
+                else if(text == 'fail'){
+                    increase('flip_lost');
+                    decrease('flip_abandoned');
+                }
+
+                updateStats();
+            }
+
+            /* LOAD GAME ACTIONS */
+            if(!get('flip_won') && !get('flip_lost') && !get('flip_abandoned')){
+                set('flip_won', 0);
+                set('flip_lost', 0);
+                set('flip_abandoned', 0);
+                set('flip_casual', '-:-');
+                set('flip_medium', '-:-');
+                set('flip_hard', '-:-');
+                set('flip_matched', 0);
+                set('flip_wrong', 0);
+            }
+
+            if(get('flip_won') > 0 || get('flip_lost') > 0 || get('flip_abandoned') > 0) {
+                updateStats();
+            }
+
+            // Fix for clickable P card
+            $('.logo .card:not(.twist)').on('click', function(e){
+                if($(this).hasClass('active')) {
+                    $(this).removeClass('active');
+                } else {
+                    $(this).addClass('active').siblings().not('.twist').removeClass('active');
+                }
+                
+                if($(e.target).is('.playnow')) {
+                    $('.logo .card').last().addClass('active').siblings().not('.twist').removeClass('active');
+                }
+            });
+
+            // Game start handler
+            $(document).on('click', '.play', function(){
+                gameActive = true;
+                $('.game-ui').show();
+                initGameStats();
+                timerInterval = setInterval(() => {
+                    gameTime++;
+                    updateGameStats();
+                }, 1000);
+
+                var difficulty = '',
+                    timer = 1000,
+                    level = $(this).data('level');
+
+                increase('flip_abandoned');
+                $('.info').fadeOut();
+                
+                if(level == 8) { difficulty = 'casual'; timer *= level * 4; }
+                else if(level == 18) { difficulty = 'medium'; timer *= level * 5; }
+                else if(level == 32) { difficulty = 'hard'; timer *= level * 6; }
+
+                $('#g').addClass(difficulty);
+
+                $('.logo').fadeOut(250, function(){
+                    var startGame = $.now(),
+                        obj = [];
+
+                    for(i = 0; i < level; i++) { obj.push(i); }
+
+                    var shu = shuffle($.merge(obj, obj)),
+                        cardSize = 100/Math.sqrt(shu.length);
+
+                    for(i = 0; i < shu.length; i++){
+                        var code = shu[i];
+                        if(code < 10) code = "0" + code;
+                        if(code == 30) code = 10;
+                        if(code == 31) code = 21;
+                        $('<div class="card" style="width:'+cardSize+'%;height:'+cardSize+'%;">'+
+                            '<div class="flipper"><div class="f"></div><div class="b" data-f="&#xf0'+code+';"></div></div>'+
+                          '</div>').appendTo('#g');
+                    }
+
+                    $('#g .card').on({
+                        'mousedown': function(){
+                            if($('#g').attr('data-paused') == 1 || !gameActive) return;
+                            if(!$(this).hasClass('active') && !$(this).hasClass('found')) {
+                                moves++;
+                                updateGameStats();
+                            }
+                            playGameSound('flip');
+                            var data = $(this).addClass('active').find('.b').attr('data-f');
+
+                            if($('#g').find('.card.active').length > 1){
+                                setTimeout(function(){
+                                    var thisCard = $('#g .active .b[data-f='+data+']');
+
+                                    if(thisCard.length > 1) {
+                                        playGameSound('match');
+                                        thisCard.parents('.card').toggleClass('active card found').empty();
+                                        increase('flip_matched');
+
+                                        if(!$('#g .card').length){
+                                            playGameSound('victory');
+                                            var time = $.now() - startGame;
+                                            if(get('flip_'+difficulty) == '-:-' || get('flip_'+difficulty) > time){
+                                                set('flip_'+difficulty, time);
+                                            }
+                                            startScreen('nice');
+                                        }
+                                    }
+                                    else {
+                                        playGameSound('wrong');
+                                        $('#g .card.active').removeClass('active');
+                                        increase('flip_wrong');
+                                    }
+                                }, 401);
+                            }
+                        }
+                    });
+
+                    // Timer implementation with settings check
+                    const timerOn = localStorage.getItem('timerOn') !== 'false';
+                    if(timerOn) {
+                        $('<div class="timer"></div>')
+                          .prependTo('#g')
+                          .css({'animation': 'timer '+timer+'ms linear'})
+                          .one('webkitAnimationEnd oanimationend msAnimationEnd animationend', function(e) {
+                              playGameSound('fail');
+                              startScreen('fail');
+                          });
+                    }
+                });
+            });
+
+            // Initialize settings if not set
+            if(!localStorage.getItem('soundOn')) {
+                localStorage.setItem('soundOn', 'true');
+            }
+            if(!localStorage.getItem('timerOn')) {
+                localStorage.setItem('timerOn', 'true');
+            }
+        });
+    </script>
+</body>
+</html>

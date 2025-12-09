@@ -1,0 +1,217 @@
+/* homepage.css */
+
+/* Reset and Core Layout */
+body, html {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    background: #182054;
+    overflow: hidden;
+    color: #fff;
+    text-align: center;
+    height: 100vh;
+    /* Use flexbox for perfect vertical and horizontal centering of the main content block */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center;     /* Center content horizontally */
+    position: relative;
+}
+
+/* Main Content Wrapper (Optional, but good practice for centering the whole block) */
+.main-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 90%; /* Prevent content from stretching too wide on huge screens */
+    width: auto; /* Let content determine its own width */
+}
+
+/* Logo Section (4-card grid) */
+.logo {
+    /* Adjusted size for a more professional proportion */
+    width: 500px; /* Reduced from 600px for a less oversized look */
+    height: 500px; /* Reduced from 600px */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 15px; /* Increased gap for better visual separation */
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    /* Removed margin: 0 auto; as parent body is now handling centering */
+}
+
+.card {
+    width: 100%;
+    height: 100%;
+    /* Retaining original gradient and styles */
+    background: linear-gradient(135deg, #4d80f0 0%, #2157cc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 100px; /* Adjusted font size to fit the slightly smaller card */
+    font-weight: bold;
+    text-transform: uppercase;
+    position: relative;
+    color: white;
+    cursor: pointer;
+    border-radius: 8px; /* Added slight rounding to cards for a softer professional look */
+    transition: transform 0.2s; /* Added hover transition */
+}
+
+.card:hover {
+    transform: scale(1.03); /* Subtle scale on hover for interactivity */
+}
+
+#card2 {
+    /* Retaining original gradient */
+    background: linear-gradient(135deg, #880fe8 0%, #9330e5 100%);
+}
+
+/* Big letters F, L, I, P */
+.f {
+    position: relative;
+    /* No change, they are already centered by the parent .card flex container */
+}
+
+/* Bottom text (FIGURES, INSTRUCTIONS, PLAY) */
+.b {
+    position: absolute;
+    bottom: 20px;
+    font-size: 18px;
+    text-transform: uppercase;
+    white-space: nowrap; /* Ensures text doesn't wrap */
+}
+
+/* Bottom Section (FLIP GAME title and PLAY NOW button) */
+.bottom-section {
+    position: relative;
+    margin-top: 40px; /* Increased margin for better separation from the grid */
+    width: 100%;
+    text-align: center;
+}
+
+h1 {
+    font-size: 60px;
+    font-weight: bold;
+    margin-top: 0; /* Adjusted: Removed the 20px margin-top, as bottom-section handles spacing */
+    margin-bottom: 20px; /* Add margin below the title */
+    color: #fff;
+}
+
+.play-button {
+    display: inline-block;
+    padding: 20px 45px; /* Slightly adjusted padding for professional look */
+    background: white;
+    color: #182054;
+    font-size: 24px; /* Slightly reduced font size for a professional button */
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 30px; /* Slightly reduced border radius */
+    text-decoration: none;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.play-button:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateY(-2px); /* Subtle lift on hover */
+}
+
+/* Settings Styles - No major changes needed as they are position fixed */
+.settings-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.settings-icon {
+    font-size: 24px;
+    background-color: green;
+    color: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.settings-icon:hover {
+    transform: rotate(30deg);
+}
+
+.settings-panel {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    padding: 15px;
+    border-radius: 10px;
+    z-index: 1001;
+}
+
+.settings-panel.show {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+}
+
+.sound-button, .timer-button {
+    background-color: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 4px 4px 0 #ff0090;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    transition: transform 0.2s;
+}
+
+.sound-button:hover, .timer-button:hover {
+    transform: scale(1.1);
+}
+
+.sound-button i, .timer-button i {
+    font-size: 24px;
+}
+
+/* Toggle Icon States */
+.sound-on, .timer-on {
+    display: inline-block;
+    color: #4CAF50;
+}
+
+.sound-off, .timer-off {
+    display: none;
+    color: #f44336;
+}
+
+.sound-on.active, .timer-on.active {
+    display: inline-block;
+}
+
+.sound-off.active, .timer-off.active {
+    display: inline-block;
+}
+
+.sound-on:not(.active), .timer-on:not(.active) {
+    display: none;
+}
+
+.sound-off:not(.active), .timer-off:not(.active) {
+    display: none;
+}

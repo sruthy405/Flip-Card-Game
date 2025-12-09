@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flip Game</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="homepage.css">
+</head>
+<body>
+  
+  <!-- Settings Wrapper -->
+  <div class="settings-wrapper">
+    <div class="settings-icon" id="settingsButton">
+      <i class="fa fa-cog" aria-hidden="true"></i>
+    </div>
+    <div class="settings-panel" id="settingsPanel">
+      <button id="soundToggle" class="sound-button">
+        <i class="fas fa-volume-up sound-on"></i>
+        <i class="fas fa-volume-mute sound-off" style="display: none;"></i>
+      </button>
+      <button id="timerToggle" class="timer-button">
+        <i class="fas fa-stopwatch timer-on"></i>
+        <i class="fas fa-ban timer-off" style="display: none;"></i>
+      </button>
+    </div>
+  </div>
+  
+<div class="main-content-wrapper"></div>
+  <!-- Logo Section -->
+  <div class="logo">
+    <div class="card" id="card1">
+      <div class="f">F</div>
+      <div class="b">FIGURES</div>
+    </div>
+    <div class="card" id="card2">
+      <div class="f">⅃</div>
+    </div>
+    <div class="card" id="card3">
+      <div class="f">I</div>
+      <div class="b">INSTRUCTIONS</div>
+    </div>
+    <div class="card" id="card4">
+      <div class="f">P</div>
+      <div class="b">PLAY</div>
+    </div>
+  </div>
+
+  <!-- Bottom Section -->
+  <div class="bottom-section">
+    <h1>FLIP GAME</h1>
+    <a href="flip.html" class="play-button" id="playNowBtn">PLAY NOW</a>
+  </div>
+ </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const settingsButton = document.getElementById('settingsButton');
+      const settingsPanel = document.getElementById('settingsPanel');
+
+      // Settings panel toggle
+      settingsButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        settingsPanel.classList.toggle('show');
+      });
+
+      // Close panel when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!settingsPanel.contains(e.target) && !settingsButton.contains(e.target)) {
+          settingsPanel.classList.remove('show');
+        }
+      });
+
+      // Sound toggle
+      const soundToggle = document.getElementById('soundToggle');
+      const soundOnIcon = soundToggle.querySelector('.sound-on');
+      const soundOffIcon = soundToggle.querySelector('.sound-off');
+      
+      soundToggle.addEventListener('click', function() {
+        const isSoundOn = soundOnIcon.style.display !== 'none';
+        soundOnIcon.style.display = isSoundOn ? 'none' : 'inline-block';
+        soundOffIcon.style.display = isSoundOn ? 'inline-block' : 'none';
+        localStorage.setItem('soundOn', !isSoundOn);
+      });
+
+      // Timer toggle
+      const timerToggle = document.getElementById('timerToggle');
+      const timerOnIcon = timerToggle.querySelector('.timer-on');
+      const timerOffIcon = timerToggle.querySelector('.timer-off');
+      
+      timerToggle.addEventListener('click', function() {
+        const isTimerOn = timerOnIcon.style.display !== 'none';
+        timerOnIcon.style.display = isTimerOn ? 'none' : 'inline-block';
+        timerOffIcon.style.display = isTimerOn ? 'inline-block' : 'none';
+        localStorage.setItem('timerOn', !isTimerOn);
+      });
+
+      // Initialize settings
+      if(!localStorage.getItem('soundOn')) {
+        localStorage.setItem('soundOn', 'true');
+        soundOnIcon.style.display = 'inline-block';
+        soundOffIcon.style.display = 'none';
+      }
+      if(!localStorage.getItem('timerOn')) {
+        localStorage.setItem('timerOn', 'true');
+        timerOnIcon.style.display = 'inline-block';
+        timerOffIcon.style.display = 'none';
+      }
+
+      // Set initial toggle states
+      if (localStorage.getItem('soundOn') === 'false') {
+        soundOnIcon.style.display = 'none';
+        soundOffIcon.style.display = 'inline-block';
+      }
+      if (localStorage.getItem('timerOn') === 'false') {
+        timerOnIcon.style.display = 'none';
+        timerOffIcon.style.display = 'inline-block';
+      }
+    });
+
+    // Play button handler
+    document.getElementById('playNowBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      window.location.href = 'flip.html';
+    });
+    
+    
+  </script>
+</body>
+</html>
